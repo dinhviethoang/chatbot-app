@@ -32,11 +32,12 @@ subprojects {
         }
     }
 
-    plugins.withId("com.android.library") {
+    if (project.state.executed) {
         setNamespaceIfMissing()
-    }
-    afterEvaluate {
-        setNamespaceIfMissing()
+    } else {
+        afterEvaluate {
+            setNamespaceIfMissing()
+        }
     }
 }
 
