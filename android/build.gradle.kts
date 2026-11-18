@@ -16,6 +16,30 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+subprojects {
+    fun setNamespaceIfMissing() {
+        val android = project.extensions.findByName("android")
+        if (android != null) {
+            try {
+                val getNamespace = android.javaClass.getMethod("getNamespace")
+                val setNamespace = android.javaClass.getMethod("setNamespace", String::class.java)
+                val current = getNamespace.invoke(android) as? String
+                if (current.isNullOrEmpty()) {
+                    setNamespace.invoke(android, "com.example.${project.name.replace("-", "_")}")
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    plugins.withId("com.android.library") {
+        setNamespaceIfMissing()
+    }
+    afterEvaluate {
+        setNamespaceIfMissing()
+    }
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
